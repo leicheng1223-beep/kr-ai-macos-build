@@ -41,6 +41,11 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Install Node dependencies
         run: npm install
 
@@ -54,7 +59,7 @@ jobs:
 
       - name: Prepare macOS Python runtime
         run: |
-          npm run prepare:macos-python:${{ matrix.arch }}
+          node scripts/prepare-macos-python-runtime.mjs ${{ matrix.runtime_key }} --python "$(python3 -c 'import sys; print(sys.executable)')"
           runtime="resources/bridge-runtime/${{ matrix.runtime_key }}/python/bin/python3"
           test -x "$runtime"
           "$runtime" -c "import numpy, PIL, onnxruntime, torch, torchvision, scipy; print('runtime ok for ${{ matrix.arch }}')"
