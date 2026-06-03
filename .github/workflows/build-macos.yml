@@ -73,7 +73,7 @@ jobs:
         run: SMOKE_SKIP_BRIDGE_EXEC=1 SMOKE_SKIP_ASAR_UNPACKED=1 npm run smoke:cross-platform
 
       - name: Build unsigned macOS app
-        run: npx electron-builder --config packaging/electron-builder.macos.yml --mac --${{ matrix.arch }}
+        run: npx electron-builder --config packaging/electron-builder.macos.yml --mac --${{ matrix.arch }} --publish never
 
       - name: List release outputs
         run: find release -maxdepth 3 -print

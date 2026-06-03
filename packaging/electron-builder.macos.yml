@@ -48,7 +48,8 @@ publish: null
 mac:
   category: public.app-category.graphics-design
   icon: build/icons/icon.icns
-  hardenedRuntime: true
+  identity: null
+  hardenedRuntime: false
   gatekeeperAssess: false
   entitlements: packaging/entitlements.mac.plist
   entitlementsInherit: packaging/entitlements.mac.inherit.plist
@@ -59,16 +60,9 @@ mac:
     NSDesktopFolderUsageDescription: Kr ai can read and write user-selected desktop files.
     NSPhotoLibraryUsageDescription: Kr ai can read user-selected image references.
   target:
-    - target: dmg
-      arch:
-        - x64
-        - arm64
     - target: zip
       arch:
         - x64
         - arm64
-
-dmg:
-  artifactName: ${productName}-${version}-${arch}.${ext}
 
 compression: normal
