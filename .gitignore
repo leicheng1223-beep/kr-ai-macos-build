@@ -1,0 +1,18 @@
+node_modules/
+release/
+
+# Windows Electron unpacked runtime files from win-unpacked.
+*.exe
+*.dll
+*.pak
+*.bin
+LICENSES.chromium.html
+vk_swiftshader_icd.json
+
+# Common temporary/build folders.
+.cache/
+temp/
+session-data/
+
+# Windows-only bundled Python/runtime artifacts are too large for a normal repo.
+resources/bridge-runtime/python/

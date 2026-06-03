@@ -1,0 +1,46 @@
+{
+  "name": "kr-ai",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Kr ai desktop app",
+  "author": "Codex",
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "recover:asar": "node scripts/recover-from-asar.mjs",
+    "patch:recovered-main:macos": "node scripts/patch-recovered-main-for-macos.mjs",
+    "smoke:cross-platform": "node scripts/smoke-cross-platform.mjs",
+    "prepare:macos-icon": "node scripts/create-macos-icon.mjs",
+    "prepare:macos-python:arm64": "node scripts/prepare-macos-python-runtime.mjs darwin-arm64",
+    "prepare:macos-python:x64": "node scripts/prepare-macos-python-runtime.mjs darwin-x64",
+    "prepare:macos-python": "npm run prepare:macos-python:arm64 && npm run prepare:macos-python:x64",
+    "rebuild:better-sqlite3:mac:arm64": "electron-rebuild -f -w better-sqlite3 --arch=arm64",
+    "rebuild:better-sqlite3:mac:x64": "electron-rebuild -f -w better-sqlite3 --arch=x64",
+    "install-app-deps:mac:arm64": "electron-builder install-app-deps --arch=arm64",
+    "install-app-deps:mac:x64": "electron-builder install-app-deps --arch=x64",
+    "dist:mac:arm64": "electron-builder --config packaging/electron-builder.macos.yml --mac --arm64",
+    "dist:mac:x64": "electron-builder --config packaging/electron-builder.macos.yml --mac --x64",
+    "dist:mac": "electron-builder --config packaging/electron-builder.macos.yml --mac --arm64 --x64",
+    "dist:mac:unsigned": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --config packaging/electron-builder.macos.yml --mac --arm64 --x64"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.8.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "three": "^0.184.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@electron/asar": "^4.0.1",
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.12",
+    "electron-rebuild": "^3.2.9"
+  },
+  "build": {
+    "asarUnpack": [
+      "node_modules/better-sqlite3/build/Release/*.node"
+    ]
+  }
+}

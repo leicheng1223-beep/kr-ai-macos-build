@@ -1,0 +1,82 @@
+name: Build macOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  build-macos:
+    name: macOS ${{ matrix.arch }} unsigned
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runtime_key: darwin-arm64
+          - arch: x64
+            runtime_key: darwin-x64
+
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      npm_config_arch: ${{ matrix.arch }}
+      npm_config_target_arch: ${{ matrix.arch }}
+      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Recover Electron app from app.asar
+        run: |
+          npm run recover:asar
+          npm run patch:recovered-main:macos
+
+      - name: Generate macOS icon
+        run: npm run prepare:macos-icon
+
+      - name: Prepare macOS Python runtime
+        run: |
+          npm run prepare:macos-python:${{ matrix.arch }}
+          runtime="resources/bridge-runtime/${{ matrix.runtime_key }}/python/bin/python3"
+          test -x "$runtime"
+          "$runtime" -c "import numpy, PIL, onnxruntime, torch, torchvision, scipy; print('runtime ok for ${{ matrix.arch }}')"
+
+      - name: Rebuild better-sqlite3 for Electron
+        run: |
+          npx electron-builder install-app-deps --arch=${{ matrix.arch }}
+          npx electron-rebuild -f -w better-sqlite3 --arch=${{ matrix.arch }}
+
+      - name: Cross-platform smoke test
+        run: SMOKE_SKIP_BRIDGE_EXEC=1 npm run smoke:cross-platform
+
+      - name: Build unsigned macOS app
+        run: npx electron-builder --config packaging/electron-builder.macos.yml --mac --${{ matrix.arch }}
+
+      - name: List release outputs
+        run: find release -maxdepth 3 -print
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kr-ai-macos-${{ matrix.arch }}-unsigned
+          path: |
+            release/**/*.app
+            release/**/*.dmg
+            release/**/*.zip
+          if-no-files-found: error
