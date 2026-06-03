@@ -8,6 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "..");
 const asarPath = path.join(repoRoot, "resources", "app.asar");
 const extractDir = path.join(repoRoot, ".asar-extract");
+const requiredDirs = ["dist", "dist-electron"];
+
+const hasRecoveredApp = requiredDirs.every((name) => fs.existsSync(path.join(repoRoot, name)));
+if (hasRecoveredApp && process.env.FORCE_ASAR_RECOVER !== "1") {
+  console.log("dist/ and dist-electron/ already exist; skipping app.asar extraction.");
+  process.exit(0);
+}
 
 if (!fs.existsSync(asarPath)) {
   console.error(`Cannot recover Electron app: missing ${asarPath}`);
@@ -34,7 +41,7 @@ if (result.status !== 0) {
   process.exit(result.status ?? 1);
 }
 
-for (const name of ["dist", "dist-electron"]) {
+for (const name of requiredDirs) {
   const source = path.join(extractDir, name);
   const target = path.join(repoRoot, name);
   if (!fs.existsSync(source)) {
