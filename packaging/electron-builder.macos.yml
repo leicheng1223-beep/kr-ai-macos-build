@@ -4,6 +4,8 @@ productName: Kr ai
 directories:
   output: release
 
+artifactName: ${productName}-${version}-${arch}.${ext}
+
 files:
   - dist/**
   - dist-electron/**
@@ -67,9 +69,6 @@ mac:
         - arm64
 
 dmg:
-  artifactName: ${productName}-${version}-${arch}.${ext}
-
-zip:
   artifactName: ${productName}-${version}-${arch}.${ext}
 
 compression: normal
