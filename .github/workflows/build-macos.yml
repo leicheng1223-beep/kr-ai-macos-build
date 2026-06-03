@@ -24,6 +24,7 @@ jobs:
             runs_on: macos-15-intel
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
       npm_config_arch: ${{ matrix.arch }}
       npm_config_target_arch: ${{ matrix.arch }}
@@ -32,17 +33,17 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -79,7 +80,7 @@ jobs:
         run: find release -maxdepth 3 -print
 
       - name: Upload macOS artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: kr-ai-macos-${{ matrix.arch }}-unsigned
           path: |
