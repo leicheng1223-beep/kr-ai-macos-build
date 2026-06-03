@@ -48,6 +48,7 @@ publish: null
 mac:
   category: public.app-category.graphics-design
   icon: build/icons/icon.icns
+  minimumSystemVersion: "11.0"
   identity: null
   hardenedRuntime: false
   gatekeeperAssess: false
