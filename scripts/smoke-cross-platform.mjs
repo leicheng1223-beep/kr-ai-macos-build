@@ -13,6 +13,7 @@ import {
 
 const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 const skipBridgeExec = process.argv.includes("--skip-bridge-exec") || process.env.SMOKE_SKIP_BRIDGE_EXEC === "1";
+const skipAsarUnpacked = process.env.SMOKE_SKIP_ASAR_UNPACKED === "1";
 
 function fakeExists(paths) {
   const normalized = new Set(paths.map((item) => path.normalize(item)));
@@ -147,6 +148,10 @@ function testAsarResources() {
     "better_sqlite3.node",
   );
   assert.equal(fs.existsSync(asarPath), true, `Missing ${asarPath}`);
+  if (skipAsarUnpacked) {
+    console.log("Skipping app.asar.unpacked native module check.");
+    return;
+  }
   assert.equal(fs.existsSync(unpackedNode), true, `Missing ${unpackedNode}`);
 }
 
